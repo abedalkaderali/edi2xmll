@@ -24,6 +24,11 @@ export default function EmployeesPage() {
               </ul>
               <ul>
                 <li>Age: {employee.age}</li>
+                <li>Email :{employee.email}</li>
+                <li>Phone number: {employee.phone_number}</li>
+                <li>Date of birth: {employee.date_of_birth}</li>
+                
+                
               </ul>
             </ul>
           </div>

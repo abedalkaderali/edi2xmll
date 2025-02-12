@@ -6,6 +6,9 @@ export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
   const full_name = formData.get("full_name");
   const age = formData.get("age");
+  const email = formData.get("email");
+  const phone_number = formData.get("phone_number");
+  const date_of_birth = formData.get("date_of_birth");
 
   const ageNumber = Number(age);
   if (isNaN(ageNumber) || ageNumber <= 14) {
@@ -13,8 +16,8 @@ export const action: ActionFunction = async ({ request }) => {
   }
   const db = await getDB();
   await db.run(
-    'INSERT INTO employees (full_name, age) VALUES (?,?)',
-    [full_name, age]
+    'INSERT INTO employees (full_name, age,email,phone_number,date_of_birth) VALUES (?,?,?,?,?)',
+    [full_name, age,email,phone_number,date_of_birth]
   );
 
   return redirect("/employees");
@@ -32,6 +35,18 @@ export default function NewEmployeePage() {
         <div>
           <label htmlFor="age">Age</label>
           <input type="number" name="age" id="age" min="18" required />
+        </div>
+        <div>
+          <label htmlFor="email">Email</label>
+          <input type="email" name="email" id="email" required />
+        </div>
+        <div>
+          <label htmlFor="phone_number">Phone number</label>
+          <input type="tel" name="phone_number" id="phone_number" required />
+        </div>
+        <div>
+          <label htmlFor="date_of_birth">Date of birth</label>
+          <input type="date" name="date_of_birth" id="date_of_birth" required />
         </div>
 
         <button type="submit">Create Employee</button>
