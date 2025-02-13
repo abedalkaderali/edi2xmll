@@ -21,12 +21,22 @@ export async function action({ request, params }) {
   const email = formData.get("email");
   const phone_number = formData.get("phone_number");
   const date_of_birth = formData.get("date_of_birth");
+  const job_title = formData.get("job_title");
+  const department = formData.get("department");
+  const salary = formData.get("salary");
+  const start_date = formData.get("start_date");
+  const end_date = formData.get("end_date");
 
   const db = await getDB();
-  await db.run(
-    "UPDATE employees SET full_name = ?, age = ?, email = ?, phone_number = ?, date_of_birth = ? WHERE id = ?",
-    [full_name, age, email, phone_number, date_of_birth, params.employeeId]
-  );
+await db.run(
+  `UPDATE employees 
+   SET full_name = ?, age = ?, email = ?, phone_number = ?, date_of_birth = ?, 
+       job_title = ?, department = ?, salary = ?, start_date = ?, end_date = ? 
+   WHERE id = ?`,
+  [full_name, age, email, phone_number, date_of_birth, 
+   job_title, department, salary, start_date, end_date, params.employeeId]
+);
+
 
   return null; 
 }
@@ -40,7 +50,12 @@ export default function EmployeePage() {
     age: employee?.age,
     email: employee?.email,
     phone_number: employee?.phone_number,
-    date_of_birth: employee?.date_of_birth
+    date_of_birth: employee?.date_of_birth,
+    job_title: employee?.job_title,
+    department: employee?.department,
+    salary: employee?.salary,
+    start_date: employee?.start_date,
+    end_date: employee?.end_date
   });
 
   
@@ -52,6 +67,11 @@ export default function EmployeePage() {
     formData.append("email", updatedEmployee.email);
     formData.append("phone_number", updatedEmployee.phone_number);
     formData.append("date_of_birth", updatedEmployee.date_of_birth);
+    formData.append("job_title", updatedEmployee.job_title);
+    formData.append("department", updatedEmployee.department);
+    formData.append("salary", updatedEmployee.salary);
+    formData.append("start_date", updatedEmployee.start_date);
+    formData.append("end_date", updatedEmployee.end_date);
 
     submit(formData, { method: "post" });
     setIsEditing(false);
@@ -119,6 +139,60 @@ export default function EmployeePage() {
             />
           </label>
           <br />
+          <label>
+          Job Title:
+              <input
+                type="text"
+                name="job_title"
+                value={updatedEmployee.job_title}
+                onChange={(e) => setUpdatedEmployee({ ...updatedEmployee, job_title: e.target.value })}
+                required
+              />
+          </label>
+          <br />
+          <label>
+              Department:
+              <input
+                  type="text"
+                  name="department"
+                  value={updatedEmployee.department}
+                  onChange={(e) => setUpdatedEmployee({ ...updatedEmployee, department: e.target.value })}
+                  required
+              />
+          </label>
+          <br />
+          <label>
+              Salary:
+              <input
+                  type="number"
+                  name="salary"
+                  value={updatedEmployee.salary}
+                  onChange={(e) => setUpdatedEmployee({ ...updatedEmployee, salary: e.target.value })}
+                  required
+              />
+          </label>
+          <br />
+          <label>
+              Start Date:
+              <input
+                  type="date"
+                  name="start_date"
+                  value={updatedEmployee.start_date}
+                  onChange={(e) => setUpdatedEmployee({ ...updatedEmployee, start_date: e.target.value })}
+                  required
+              />
+          </label>
+          <br />
+          <label>
+              End Date:
+              <input
+                  type="date"
+                  name="end_date"
+                  value={updatedEmployee.end_date}
+                  onChange={(e) => setUpdatedEmployee({ ...updatedEmployee, end_date: e.target.value })}
+              />
+          </label>
+          <br />
           <button type="submit">Save</button>
           <button type="button" onClick={() => setIsEditing(false)}>Cancel</button>
         </form>
@@ -130,6 +204,11 @@ export default function EmployeePage() {
           <li><strong>Email:</strong> {employee?.email}</li>
           <li><strong>Phone number:</strong> {employee?.phone_number}</li>
           <li><strong>Date of birth:</strong> {employee?.date_of_birth}</li>
+          <li><strong>Job Title:</strong> {employee?.job_title}</li>
+          <li><strong>Department:</strong> {employee?.department}</li>
+          <li><strong>Salary:</strong> {employee?.salary}</li>
+          <li><strong>Start Date:</strong> {employee?.start_date}</li>
+          <li><strong>End Date:</strong> {employee?.end_date || "N/A"}</li>
         </ul>
       )}
 

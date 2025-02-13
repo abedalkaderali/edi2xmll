@@ -1,7 +1,8 @@
 import { useLoaderData, useSubmit } from "react-router";
 import { useState } from "react";
 import { getDB } from "~/db/getDB";
-
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
 
 export async function loader() {
   const db = await getDB();
@@ -11,7 +12,6 @@ export async function loader() {
 
   return { timesheetsAndEmployees };
 }
-
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -34,14 +34,20 @@ export default function TimesheetsPage() {
   const [selectedTimesheet, setSelectedTimesheet] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [updatedTimesheet, setUpdatedTimesheet] = useState({ start_time: "", end_time: "" });
+  const [viewMode, setViewMode] = useState("table");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedEmployee, setSelectedEmployee] = useState("");
 
-  
+  const filteredTimesheets = timesheetsAndEmployees.filter(ts => 
+    ts.full_name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    (selectedEmployee === "" || ts.employee_id.toString() === selectedEmployee)
+  );
+
   const handleSelectTimesheet = (timesheet) => {
     setSelectedTimesheet(timesheet);
     setIsEditing(false);
   };
 
- 
   const handleEdit = () => {
     setIsEditing(true);
     setUpdatedTimesheet({
@@ -49,7 +55,6 @@ export default function TimesheetsPage() {
       end_time: selectedTimesheet.end_time
     });
   };
-
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -60,31 +65,61 @@ export default function TimesheetsPage() {
 
     submit(formData, { method: "post" });
     setIsEditing(false);
-    setSelectedTimesheet({ selectedTimesheet, updatedTimesheet }); 
+    setSelectedTimesheet({ selectedTimesheet, updatedTimesheet });
   };
 
   return (
     <div>
       {!selectedTimesheet ? (
-      
         <div>
           <h1>Timesheets</h1>
-          <div>
-            {timesheetsAndEmployees.map((timesheet) => (
-              <div key={timesheet.id} onClick={() => handleSelectTimesheet(timesheet)} style={{ cursor: "pointer", padding: "10px", borderBottom: "1px solid #ccc" }}>
-                <ul>
-                  <li>
-                    <strong>Timesheet #{timesheet.id}</strong>
-                  </li>
-                  <ul>
-                    <li>Employee: {timesheet.full_name} (ID: {timesheet.employee_id})</li>
-                    <li>Start Time: {timesheet.start_time}</li>
-                    <li>End Time: {timesheet.end_time}</li>
-                  </ul>
-                </ul>
-              </div>
+          <button onClick={() => setViewMode(viewMode === "table" ? "calendar" : "table")}>Toggle View</button>
+          <input 
+            type="text" 
+            placeholder="Search by Employee Name" 
+            value={searchTerm} 
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <select onChange={(e) => setSelectedEmployee(e.target.value)} value={selectedEmployee}>
+            <option value="">All Employees</option>
+            {Array.from(new Set(timesheetsAndEmployees.map(ts => ts.employee_id))).map(id => (
+              <option key={id} value={id}>{timesheetsAndEmployees.find(ts => ts.employee_id === id).full_name}</option>
             ))}
-          </div>
+          </select>
+          {viewMode === "calendar" ? (
+            <FullCalendar
+              plugins={[dayGridPlugin]}
+              initialView="dayGridMonth"
+              events={filteredTimesheets.map(ts => ({
+                title: ts.full_name,
+                start: ts.start_time,
+                end: ts.end_time
+              }))}
+            />
+          ) : (
+            <table border="1" width="100%">
+              <thead>
+                <tr>
+                  <th>Timesheet ID</th>
+                  <th>Employee</th>
+                  <th>Start Time</th>
+                  <th>End Time</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredTimesheets.map((timesheet) => (
+                  <tr key={timesheet.id}>
+                    <td>{timesheet.id}</td>
+                    <td>{timesheet.full_name} (ID: {timesheet.employee_id})</td>
+                    <td>{timesheet.start_time}</td>
+                    <td>{timesheet.end_time}</td>
+                    <td><a href={`/timesheets/${timesheet.id}`}>View</a></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
           <hr />
           <ul>
             <li><a href="/timesheets/new">New Timesheet</a></li>
@@ -92,11 +127,9 @@ export default function TimesheetsPage() {
           </ul>
         </div>
       ) : (
-     
         <div>
           <h2>Timesheet #{selectedTimesheet.id}</h2>
           {isEditing ? (
-          
             <form onSubmit={handleSubmit}>
               <label>
                 Start Time:
@@ -124,14 +157,12 @@ export default function TimesheetsPage() {
               <button type="button" onClick={() => setIsEditing(false)}>Cancel</button>
             </form>
           ) : (
-           
             <ul>
               <li><strong>Employee:</strong> {selectedTimesheet.full_name} (ID: {selectedTimesheet.employee_id})</li>
               <li><strong>Start Time:</strong> {selectedTimesheet.start_time}</li>
               <li><strong>End Time:</strong> {selectedTimesheet.end_time}</li>
             </ul>
           )}
-
           {!isEditing && <button onClick={handleEdit}>Update</button>}
           <button onClick={() => setSelectedTimesheet(null)}>Back to Timesheets</button>
         </div>

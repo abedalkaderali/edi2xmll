@@ -9,6 +9,11 @@ export const action: ActionFunction = async ({ request }) => {
   const email = formData.get("email");
   const phone_number = formData.get("phone_number");
   const date_of_birth = formData.get("date_of_birth");
+  const job_title = formData.get("job_title");
+  const department = formData.get("department");
+  const salary = formData.get("salary");
+  const start_date = formData.get("start_date");
+  const end_date = formData.get("end_date");
 
   const ageNumber = Number(age);
   if (isNaN(ageNumber) || ageNumber <= 14) {
@@ -16,8 +21,8 @@ export const action: ActionFunction = async ({ request }) => {
   }
   const db = await getDB();
   await db.run(
-    'INSERT INTO employees (full_name, age,email,phone_number,date_of_birth) VALUES (?,?,?,?,?)',
-    [full_name, age,email,phone_number,date_of_birth]
+    'INSERT INTO employees (full_name, age,email,phone_number,date_of_birth,job_title,department,salary,start_date,end_date) VALUES (?,?,?,?,?,?,?,?,?,?)',
+    [full_name, age,email,phone_number,date_of_birth,job_title,department,salary,start_date,end_date]
   );
 
   return redirect("/employees");
@@ -48,6 +53,27 @@ export default function NewEmployeePage() {
           <label htmlFor="date_of_birth">Date of birth</label>
           <input type="date" name="date_of_birth" id="date_of_birth" required />
         </div>
+        <div>
+          <label htmlFor="job_title">Job Title:</label>
+          <input type="text" id="job_title" name="job_title" required/>
+        </div>
+        <div>
+          <label htmlFor="department">Department:</label>
+          <input type="text" id="department" name="department" required/>
+        </div>
+        <div>
+          <label htmlFor="salary">Salary:</label>
+          <input type="number" id="salary" name="salary" required/>
+        </div>
+        <div>
+          <label htmlFor="start_date">Start Date:</label>
+          <input type="date" id="start_date" name="start_date" required/>
+        </div>
+        <div>
+          <label htmlFor="end_date">End Date:</label>
+          <input type="date" id="end_date" name="end_date"/>
+        </div>
+        
 
         <button type="submit">Create Employee</button>
       </Form>
@@ -60,5 +86,5 @@ export default function NewEmployeePage() {
         <li><a href="/timesheets">Timesheets</a></li>
       </ul>
     </div>
-  );
+2  );
 }
