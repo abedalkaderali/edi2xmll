@@ -45,7 +45,6 @@ export default function EmployeesPage() {
       <select onChange={(e) => setSortField(e.target.value)}>
         <option value="id">ID</option>
         <option value="full_name">Full Name</option>
-        <option value="age">Age</option>
       </select>
       <button onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}>
         Toggle Sort Order
@@ -55,7 +54,6 @@ export default function EmployeesPage() {
           <tr>
             <th>ID</th>
             <th>Full Name</th>
-            <th>Age</th>
             <th>Email</th>
             <th>Phone</th>
             <th>Date of Birth</th>
@@ -68,7 +66,6 @@ export default function EmployeesPage() {
               <td>
                 <Link to={`/employees/${employee.id}`}>{employee.full_name}</Link>
               </td>
-              <td>{employee.age}</td>
               <td>{employee.email}</td>
               <td>{employee.phone_number}</td>
               <td>{employee.date_of_birth}</td>
