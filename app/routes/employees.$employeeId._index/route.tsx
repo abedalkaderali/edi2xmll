@@ -17,7 +17,6 @@ export async function loader({ params }) {
 export async function action({ request, params }) {
   const formData = await request.formData();
   const full_name = formData.get("full_name");
-  const age = formData.get("age");
   const email = formData.get("email");
   const phone_number = formData.get("phone_number");
   const date_of_birth = formData.get("date_of_birth");
@@ -30,10 +29,10 @@ export async function action({ request, params }) {
   const db = await getDB();
 await db.run(
   `UPDATE employees 
-   SET full_name = ?, age = ?, email = ?, phone_number = ?, date_of_birth = ?, 
+   SET full_name = ?, email = ?, phone_number = ?, date_of_birth = ?, 
        job_title = ?, department = ?, salary = ?, start_date = ?, end_date = ? 
    WHERE id = ?`,
-  [full_name, age, email, phone_number, date_of_birth, 
+  [full_name, email, phone_number, date_of_birth, 
    job_title, department, salary, start_date, end_date, params.employeeId]
 );
 
@@ -47,7 +46,6 @@ export default function EmployeePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [updatedEmployee, setUpdatedEmployee] = useState({
     full_name: employee?.full_name,
-    age: employee?.age,
     email: employee?.email,
     phone_number: employee?.phone_number,
     date_of_birth: employee?.date_of_birth,
@@ -63,7 +61,6 @@ export default function EmployeePage() {
     event.preventDefault();
     const formData = new FormData();
     formData.append("full_name", updatedEmployee.full_name);
-    formData.append("age", updatedEmployee.age);
     formData.append("email", updatedEmployee.email);
     formData.append("phone_number", updatedEmployee.phone_number);
     formData.append("date_of_birth", updatedEmployee.date_of_birth);
@@ -91,17 +88,6 @@ export default function EmployeePage() {
               name="full_name"
               value={updatedEmployee.full_name}
               onChange={(e) => setUpdatedEmployee({ ...updatedEmployee, full_name: e.target.value })}
-              required
-            />
-          </label>
-          <br />
-          <label>
-            Age:
-            <input
-              type="number"
-              name="age"
-              value={updatedEmployee.age}
-              onChange={(e) => setUpdatedEmployee({ ...updatedEmployee, age: e.target.value })}
               required
             />
           </label>
@@ -200,7 +186,6 @@ export default function EmployeePage() {
         
         <ul>
           <li><strong>Full Name:</strong> {employee?.full_name}</li>
-          <li><strong>Age:</strong> {employee?.age}</li>
           <li><strong>Email:</strong> {employee?.email}</li>
           <li><strong>Phone number:</strong> {employee?.phone_number}</li>
           <li><strong>Date of birth:</strong> {employee?.date_of_birth}</li>
