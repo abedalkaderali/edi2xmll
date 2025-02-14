@@ -86,5 +86,5 @@ export default function NewEmployeePage() {
         <li><a href="/timesheets">Timesheets</a></li>
       </ul>
     </div>
-2  );
+);
 }
